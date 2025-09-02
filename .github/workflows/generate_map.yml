@@ -1,0 +1,59 @@
+name: Generate District Map
+
+on:
+  workflow_dispatch:
+    inputs:
+      district:
+        description: 'District code (e.g., KY-06)'
+        required: true
+        default: 'KY-06'
+      map_title:
+        description: 'Map title'
+        required: true
+        default: 'KY-06 Congressional District'
+
+jobs:
+  generate-map:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        pip install folium==0.15.1 jinja2
+    
+    - name: Generate map
+      run: |
+        python -m src.core.map_generator \
+          --district "${{ github.event.inputs.district }}" \
+          --title "${{ github.event.inputs.map_title }}" \
+          --output outputs/index.html
+    
+    - name: Upload map artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: generated-map
+        path: outputs/index.html
+    
+    - name: Deploy to GitHub Pages
+      if: success()
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./outputs
+        keep_files: false
