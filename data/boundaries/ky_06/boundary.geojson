@@ -1,0 +1,26 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "KY-06",
+        "district": "06",
+        "state": "Kentucky",
+        "state_fips": "21"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-84.8583, 38.2486],
+          [-84.8583, 37.6913],
+          [-84.2917, 37.6913],
+          [-83.9444, 37.6913],
+          [-83.9444, 38.0328],
+          [-84.2917, 38.2486],
+          [-84.8583, 38.2486]
+        ]]
+      }
+    }
+  ]
+}
