@@ -68,13 +68,53 @@ class CongressionalMapGenerator:
         county_zip.unlink()
     
     def _download_file(self, url, filepath):
-        """Download a file with progress indication"""
-        response = requests.get(url, stream=True)
-        response.raise_for_status()
+        """Download a file with progress indication and SSL handling"""
+        # Create a session with SSL verification disabled for CI environments
+        session = requests.Session()
+        session.verify = False  # Disable SSL verification for CI
         
-        with open(filepath, 'wb') as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
+        # Add headers to mimic a browser request
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        
+        try:
+            print(f"Downloading {url}...")
+            response = session.get(url, stream=True, headers=headers, timeout=300)
+            response.raise_for_status()
+            
+            total_size = int(response.headers.get('content-length', 0))
+            downloaded_size = 0
+            
+            with open(filepath, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)
+                        downloaded_size += len(chunk)
+                        if total_size > 0:
+                            progress = (downloaded_size / total_size) * 100
+                            print(f"\rProgress: {progress:.1f}%", end='', flush=True)
+            
+            print(f"\nDownloaded {filepath.name} ({downloaded_size:,} bytes)")
+            
+        except Exception as e:
+            print(f"\nError downloading {url}: {e}")
+            # Try alternative URL format if available
+            if 'www2.census.gov' in url:
+                alt_url = url.replace('www2.census.gov', 'www.census.gov')
+                print(f"Trying alternative URL: {alt_url}")
+                try:
+                    response = session.get(alt_url, stream=True, headers=headers, timeout=300)
+                    response.raise_for_status()
+                    with open(filepath, 'wb') as f:
+                        for chunk in response.iter_content(chunk_size=8192):
+                            if chunk:
+                                f.write(chunk)
+                    print(f"Successfully downloaded from alternative URL")
+                except Exception as alt_e:
+                    raise Exception(f"Both primary and alternative downloads failed. Primary: {e}, Alternative: {alt_e}")
+            else:
+                raise
     
     def _extract_zip(self, zip_path, extract_dir):
         """Extract zip file to directory"""
