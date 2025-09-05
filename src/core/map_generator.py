@@ -47,8 +47,15 @@ class CongressionalMapGenerator:
         return fips_map.get(state_abbrev)
     
     def _get_district_number(self):
-        """Extract district number from district code"""
-        return self.district_code[3:].lstrip('0')
+    """Extract district number from district code, preserving leading zeros"""
+    print(f"DEBUG: Original district_code: '{self.district_code}'")
+    print(f"DEBUG: Length: {len(self.district_code)}")
+    print(f"DEBUG: After position 3: '{self.district_code[3:]}'")
+    
+    district_part = self.district_code[3:]
+    result = district_part.zfill(2)
+    print(f"DEBUG: Final result: '{result}'")
+    return result
     
     def download_census_data(self):
         """Download Census TIGER shapefiles for districts and counties"""
