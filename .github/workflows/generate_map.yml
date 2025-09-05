@@ -82,7 +82,7 @@ jobs:
         du -sh data/ || echo "Data directory not found"
     
     - name: Upload map artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: congressional-map-${{ env.DISTRICT }}
         path: |
