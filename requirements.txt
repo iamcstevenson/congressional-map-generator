@@ -1,19 +1,7 @@
-# Core geospatial libraries - version locked
-geopandas==0.13.2
-folium==0.14.0
-pandas==2.0.3
-shapely==2.0.1
-fiona==1.9.4
-pyproj==3.5.0
-
-# Data processing
-numpy==1.24.3
-scipy==1.10.1
-
-# Geocoding and validation
-geopy==2.3.0
-jsonschema==4.17.3
-
-# Web and optimization
-jinja2==3.1.2
-pillow==9.5.0
+folium>=0.14.0
+geopandas>=0.14.0
+shapely>=2.0.0
+pandas>=2.0.0
+requests>=2.31.0
+fiona>=1.9.0
+pyproj>=3.6.0
