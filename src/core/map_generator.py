@@ -134,10 +134,23 @@ class CongressionalMapGenerator:
         # Load district data
         districts_gdf = gpd.read_file(district_files[0])
         
-        # Filter for our specific district
+        # Debug: Print available districts
+        print(f"Available districts in shapefile: {sorted(districts_gdf['CD119FP'].unique())}")
+        print(f"Looking for district: '{self.district_num}'")
+        
+        # Filter for our specific district - try both with and without leading zero
         district_row = districts_gdf[districts_gdf['CD119FP'] == self.district_num]
         if district_row.empty:
-            raise ValueError(f"District {self.district_num} not found in shapefile")
+            # Try without leading zero
+            alt_district_num = self.district_num.lstrip('0')
+            print(f"Trying alternative format: '{alt_district_num}'")
+            district_row = districts_gdf[districts_gdf['CD119FP'] == alt_district_num]
+            
+        if district_row.empty:
+            available = sorted(districts_gdf['CD119FP'].unique())
+            raise ValueError(f"District {self.district_num} not found in shapefile. Available districts: {available}")
+        
+        print(f"Found district {self.district_num} in shapefile")
         
         # Save full precision boundary
         district_geojson = district_row.to_json()
