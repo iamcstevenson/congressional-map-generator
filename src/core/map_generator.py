@@ -24,6 +24,11 @@ class CongressionalMapGenerator:
         self.output_dir = Path(f"data/boundaries/{district_code.lower()}")
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
+        # Debug output
+        print(f"Initialized with district_code: {self.district_code}")
+        print(f"Extracted district_num: {self.district_num}")
+        print(f"State FIPS: {self.state_fips}")
+        
     def _get_state_fips(self):
         """Extract state FIPS code from district code"""
         state_abbrev = self.district_code[:2]
